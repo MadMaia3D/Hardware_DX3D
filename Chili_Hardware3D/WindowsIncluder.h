@@ -29,7 +29,6 @@
 #define NOSOUND
 #define NOTEXTMETRIC
 #define NOWH
-#define NOWINOFFSETS
 #define NOCOMM
 #define NOKANJI
 #define NOHELP
