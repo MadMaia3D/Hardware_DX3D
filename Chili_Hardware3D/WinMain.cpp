@@ -1,4 +1,4 @@
-#include <Windows.h>
+#include "WindowsIncluder.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	switch (uMsg) {
