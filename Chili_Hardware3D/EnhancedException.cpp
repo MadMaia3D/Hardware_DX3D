@@ -29,7 +29,7 @@ const std::string EnhancedException::GetFile() const noexcept {
 
 std::string EnhancedException::GetOriginString() const noexcept {
 	std::ostringstream oss;
-	oss << "File: " << GetFile() << std::endl
-		<< "Line: " << GetLine();
+	oss << "[File] " << GetFile() << std::endl
+		<< "[Line] " << GetLine();
 	return oss.str();
 }

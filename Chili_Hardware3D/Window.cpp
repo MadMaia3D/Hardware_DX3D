@@ -11,8 +11,8 @@ Window::Exception::Exception(const char * file, int line, HRESULT hResult) noexc
 const char * Window::Exception::what() const noexcept{
 	std::ostringstream oss;
 	oss << GetType() << std::endl
-		<< "Error Code: " << GetErrorCode() << std::endl
-		<< "Description " << GetErrorString() << std::endl
+		<< "[Error Code] " << GetErrorCode() << std::endl
+		<< "[Description] " << GetErrorString() << std::endl
 		<< GetOriginString();
 	whatBuffer = oss.str();
 	return whatBuffer.c_str();
