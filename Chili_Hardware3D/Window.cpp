@@ -1,4 +1,57 @@
 #include "Window.h"
+#include <sstream>
+
+// ---------------------------------- WINDOW EXCEPTION ----------------------------------
+Window::Exception::Exception(const char * file, int line, HRESULT hResult) noexcept
+	:
+	EnhancedException(file, line),
+	hResult(hResult) {
+}
+
+const char * Window::Exception::what() const noexcept{
+	std::ostringstream oss;
+	oss << GetType() << std::endl
+		<< "Error Code: " << GetErrorCode() << std::endl
+		<< "Description " << GetErrorString() << std::endl
+		<< GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char * Window::Exception::GetType() const noexcept {
+	return "Window Exception";
+}
+
+std::string Window::Exception::TranslateErrorCode(HRESULT hResult) noexcept {
+	char* pMsgBuffer = nullptr;
+	const DWORD dwFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+
+	DWORD nMsgLen = FormatMessage(dwFlags,
+								  nullptr,
+								  hResult,
+								  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+								  reinterpret_cast<LPSTR>(&pMsgBuffer),
+								  0,
+								  nullptr);
+
+	if (nMsgLen == 0) {
+		return "Unidentified error code";
+	}
+
+	std::string errorString = pMsgBuffer;
+	LocalFree(pMsgBuffer);
+	return errorString;
+}
+
+HRESULT Window::Exception::GetErrorCode() const noexcept {
+	return hResult;
+}
+
+std::string Window::Exception::GetErrorString() const noexcept {
+	return TranslateErrorCode(hResult);
+}
+
+// ---------------------------------- WINDOW CLASS ----------------------------------
 
 Window::WindowClass Window::WindowClass::wcSingleton;
 
@@ -35,6 +88,8 @@ const char * Window::WindowClass::GetName() {
 HINSTANCE Window::WindowClass::GetInstance() {
 	return hInstance;
 }
+
+// ---------------------------------- WINDOW ----------------------------------
 
 Window::Window(int width, int height, const char * title) {
 	// Create Window Instance
@@ -97,3 +152,5 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+
