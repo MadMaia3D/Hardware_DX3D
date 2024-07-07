@@ -101,7 +101,10 @@ Window::Window(int width, int height, const char * title) {
 	clientSize.top = 0;
 	clientSize.bottom = clientSize.top + height;
 
-	AdjustWindowRect(&clientSize, wndStyle, FALSE);
+	if (AdjustWindowRect(&clientSize, wndStyle, FALSE) == 0 ) {
+		throw Exception(__FILE__, __LINE__, GetLastError());
+	}
+
 	const int totalWidth = clientSize.right - clientSize.left;
 	const int totalHeight = clientSize.bottom - clientSize.top;
 
@@ -114,6 +117,10 @@ Window::Window(int width, int height, const char * title) {
 						  nullptr,
 						  Window::WindowClass::wcSingleton.GetInstance(),
 						  this);
+
+	if (hWnd == nullptr) {
+		throw Exception(__FILE__, __LINE__, GetLastError());
+	}
 
 	ShowWindow(hWnd, SW_SHOW);
 }
