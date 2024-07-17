@@ -50,7 +50,10 @@ Window::Window(const char *title, int width, int height)
 	windowRect.top = 100;
 	windowRect.right = width + windowRect.left;
 	windowRect.bottom = height + windowRect.top;
-	AdjustWindowRect(&windowRect, wndStyle, FALSE);
+
+	if (AdjustWindowRect(&windowRect, wndStyle, FALSE) == 0) {
+		throw Window::Exception(GET_FILE_NAME, GET_LINE_NUMBER, GetLastError());
+	}
 
 	const int windowFinalWidth = windowRect.right - windowRect.left;
 	const int windowFinalHeight = windowRect.bottom - windowRect.top;
@@ -64,6 +67,10 @@ Window::Window(const char *title, int width, int height)
 						  nullptr,
 						  WindowClass::GetHINSTANCE(),
 						  this);
+
+	if (hWnd == nullptr) {
+		throw Window::Exception(GET_FILE_NAME, GET_LINE_NUMBER, GetLastError());
+	}
 
 	ShowWindow(hWnd, SW_SHOWNORMAL);
 }
