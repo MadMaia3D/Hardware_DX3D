@@ -109,10 +109,10 @@ Window::Exception::Exception(const char *fileName, size_t lineNumber, HRESULT er
 
 const char* Window::Exception::what() const noexcept {
 	std::ostringstream oss;
-	oss << GetType() << ":" << "\n\n"
+	oss << GetType() << ":" << "\n"
 		<< "[Error Code]: " << GetErrorCode() << "\n"
 		<< "[Description]:" << GetErrorString() << "\n"
-		<< GetOriginString();
+		<< "throw at:" << "\n" << GetOriginString();
 
 	whatBuffer = oss.str();
 	return whatBuffer.c_str();

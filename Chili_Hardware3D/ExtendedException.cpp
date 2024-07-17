@@ -9,7 +9,7 @@ ExtendedException::ExtendedException(const char *fileName, size_t lineNumber) no
 
 const char* ExtendedException::what() const noexcept {
 	std::ostringstream oss;
-	oss << GetType() << " throw at:" << std::endl
+	oss << GetType() << "\n\n" << "throw at:" << "\n"
 		<< GetOriginString();
 
 	whatBuffer = oss.str();
