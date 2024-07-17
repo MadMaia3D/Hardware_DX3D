@@ -73,7 +73,7 @@ Window::~Window() {
 }
 
 LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if (uMsg == WM_CREATE) {
+	if (uMsg == WM_NCCREATE) {
 		const CREATESTRUCT *const pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 		Window *const pWnd = static_cast<Window*>(pCreate->lpCreateParams);
 
