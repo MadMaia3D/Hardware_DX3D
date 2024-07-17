@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <sstream>
 
 // ******************************** Window::WindowClass Definitions ********************************
 Window::WindowClass Window::WindowClass::singleton;

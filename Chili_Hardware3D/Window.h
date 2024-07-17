@@ -1,7 +1,6 @@
 #pragma once
 #include "WindowsIncluder.h"
 #include "ExtendedException.h"
-#include <sstream>
 
 class Window {
 public:
