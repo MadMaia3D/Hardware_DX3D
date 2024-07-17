@@ -151,8 +151,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExtendedException.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowsIncluder.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Chili_Hardware3D.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
