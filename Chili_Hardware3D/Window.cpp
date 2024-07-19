@@ -37,6 +37,56 @@ HINSTANCE Window::WindowClass::GetHINSTANCE() {
 	return WindowClass::singleton.hInstance;
 }
 
+// ******************************** Window::Exception Definitions ********************************
+
+Window::Exception::Exception(const char *fileName, size_t lineNumber, HRESULT errorCode) noexcept
+	:
+	ExtendedException(fileName, lineNumber),
+	errorCode(errorCode) {
+}
+
+const char* Window::Exception::what() const noexcept {
+	std::ostringstream oss;
+	oss << GetType() << ":" << "\n"
+		<< "[Error Code]: " << GetErrorCode() << "\n"
+		<< "[Description]:" << GetErrorString() << "\n"
+		<< "throw at:" << "\n" << GetOriginString();
+
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+};
+
+const char* Window::Exception::GetType() const noexcept {
+	return "Window Exception";
+}
+
+std::string Window::Exception::TranslateErrorCode(HRESULT errorCode) const noexcept {
+	char* pMsgBuffer;
+	DWORD msgLength = FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr,
+		errorCode,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPSTR>(&pMsgBuffer),
+		0,
+		nullptr
+	);
+	if (msgLength == 0) {
+		return "Unidentified error code";
+	}
+	std::string errorString = pMsgBuffer;
+	LocalFree(pMsgBuffer);
+	return errorString;
+}
+
+HRESULT Window::Exception::GetErrorCode() const noexcept {
+	return errorCode;
+}
+
+std::string Window::Exception::GetErrorString() const noexcept {
+	return TranslateErrorCode(errorCode);
+}
+
 // ******************************** Window Definitions ********************************
 
 Window::Window(const char *title, int width, int height)
@@ -106,54 +156,4 @@ LRESULT CALLBACK Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		return 0;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-// ******************************** Window::Exception Definitions ********************************
-
-Window::Exception::Exception(const char *fileName, size_t lineNumber, HRESULT errorCode) noexcept
-	:
-	ExtendedException(fileName, lineNumber),
-	errorCode(errorCode) {
-}
-
-const char* Window::Exception::what() const noexcept {
-	std::ostringstream oss;
-	oss << GetType() << ":" << "\n"
-		<< "[Error Code]: " << GetErrorCode() << "\n"
-		<< "[Description]:" << GetErrorString() << "\n"
-		<< "throw at:" << "\n" << GetOriginString();
-
-	whatBuffer = oss.str();
-	return whatBuffer.c_str();
-};
-
-const char* Window::Exception::GetType() const noexcept {
-	return "Window Exception";
-}
-
-std::string Window::Exception::TranslateErrorCode(HRESULT errorCode) const noexcept {
-	char* pMsgBuffer;
-	DWORD msgLength = FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr,
-		errorCode,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		reinterpret_cast<LPSTR>(&pMsgBuffer),
-		0,
-		nullptr
-	);
-	if (msgLength == 0) {
-		return "Unidentified error code";
-	}
-	std::string errorString = pMsgBuffer;
-	LocalFree(pMsgBuffer);
-	return errorString;
-}
-
-HRESULT Window::Exception::GetErrorCode() const noexcept {
-	return errorCode;
-}
-
-std::string Window::Exception::GetErrorString() const noexcept {
-	return TranslateErrorCode(errorCode);
 }
