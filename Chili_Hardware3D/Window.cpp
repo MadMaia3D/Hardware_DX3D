@@ -154,6 +154,23 @@ LRESULT CALLBACK Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
+	case WM_KILLFOCUS:
+		kbd.ClearState();
+		break;
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+		if (!(lParam & 0x40000000) || kbd.IsAutoRepeatEnabled()) {
+			kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+		}
+		break;
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+		break;
+	case WM_CHAR:
+	case WM_SYSCHAR:
+		kbd.OnChar(static_cast<unsigned char>(wParam));
+		break;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "WindowsIncluder.h"
 #include "ExtendedException.h"
+#include "Keyboard.h"
 
 class Window {
 public:
@@ -43,4 +44,6 @@ private:
 	int width;
 	int height;
 	HWND hWnd;
+public:
+	Keyboard kbd;
 };
