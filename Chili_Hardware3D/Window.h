@@ -36,12 +36,12 @@ public:
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
+	void SetTitle(const std::string& title);
 private:
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 private:
-	const char *title;
 	int width;
 	int height;
 	HWND hWnd;

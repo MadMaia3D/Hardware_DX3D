@@ -90,7 +90,6 @@ std::string Window::Exception::GetErrorString() const noexcept {
 
 Window::Window(const char *title, int width, int height)
 	:
-	title(title),
 	width(width),
 	height(height) {
 	const DWORD wndStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
@@ -127,6 +126,12 @@ Window::Window(const char *title, int width, int height)
 
 Window::~Window() {
 	DestroyWindow(hWnd);
+}
+
+void Window::SetTitle(const std::string & title) {
+	if (SetWindowText(hWnd, title.c_str()) == 0) {
+		throw Exception(GET_FILE_NAME, GET_LINE_NUMBER, GetLastError());
+	}
 }
 
 LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
