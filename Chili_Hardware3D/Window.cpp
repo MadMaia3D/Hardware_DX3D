@@ -6,9 +6,8 @@
 Window::WindowClass Window::WindowClass::singleton;
 
 Window::WindowClass::WindowClass()
-:
-	hInstance(GetModuleHandle(NULL))
-{
+	:
+	hInstance(GetModuleHandle(NULL)) {
 	WNDCLASSEX wc = { 0 };
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_OWNDC;
@@ -93,8 +92,7 @@ Window::Window(const char *title, int width, int height)
 	:
 	title(title),
 	width(width),
-	height(height)
-{
+	height(height) {
 	const DWORD wndStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
 	RECT windowRect = { 0 };
@@ -157,6 +155,7 @@ LRESULT CALLBACK Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case WM_KILLFOCUS:
 		kbd.ClearState();
 		break;
+		// ******************************** Keyboard Messages ********************************
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 		if (!(lParam & 0x40000000) || kbd.IsAutoRepeatEnabled()) {
@@ -171,6 +170,48 @@ LRESULT CALLBACK Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case WM_SYSCHAR:
 		kbd.OnChar(static_cast<unsigned char>(wParam));
 		break;
+		// ******************************** Mouse Messages ********************************
+	case WM_MOUSEMOVE:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnMouseMove(pt.x, pt.y);
+	}
+	break;
+	case WM_LBUTTONDOWN:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnLeftButtonPress(pt.x, pt.y);
+	}
+	break;
+	case WM_LBUTTONUP:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnLeftButtonRelease(pt.x, pt.y);
+	}
+	break;
+	case WM_RBUTTONDOWN:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnRightButtonPress(pt.x, pt.y);
+	}
+	break;
+	case WM_RBUTTONUP:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnRightButtonRelease(pt.x, pt.y);
+	}
+	break;
+	case WM_MOUSEWHEEL:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		const short delta = GET_WHEEL_DELTA_WPARAM(wParam);
+		if (delta > 0) {
+			mouse.OnWheelUp(pt.x, pt.y);
+		} else if (delta < 0) {
+			mouse.OnWheelDown(pt.x, pt.y);
+		}
+	}
+	break;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
