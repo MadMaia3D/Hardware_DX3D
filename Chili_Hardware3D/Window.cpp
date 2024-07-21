@@ -179,31 +179,45 @@ LRESULT CALLBACK Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case WM_MOUSEMOVE:
 	{
 		const POINTS pt = MAKEPOINTS(lParam);
-		mouse.OnMouseMove(pt.x, pt.y);
+		if (pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height) {
+			mouse.OnMouseMove(pt.x, pt.y);
+
+			if (!mouse.IsInWindow()) {
+				SetCapture(hWnd);
+				mouse.OnMouseEnter();
+			}
+		} else {
+			if (wParam & (MK_LBUTTON | MK_RBUTTON)) {
+				mouse.OnMouseMove(pt.x, pt.y);
+			} else {
+				ReleaseCapture();
+				mouse.OnMouseLeave();
+			}
+		}
 	}
 	break;
 	case WM_LBUTTONDOWN:
 	{
 		const POINTS pt = MAKEPOINTS(lParam);
-		mouse.OnLeftButtonPress(pt.x, pt.y);
+		mouse.OnLeftButtonPress();
 	}
 	break;
 	case WM_LBUTTONUP:
 	{
 		const POINTS pt = MAKEPOINTS(lParam);
-		mouse.OnLeftButtonRelease(pt.x, pt.y);
+		mouse.OnLeftButtonRelease();
 	}
 	break;
 	case WM_RBUTTONDOWN:
 	{
 		const POINTS pt = MAKEPOINTS(lParam);
-		mouse.OnRightButtonPress(pt.x, pt.y);
+		mouse.OnRightButtonPress();
 	}
 	break;
 	case WM_RBUTTONUP:
 	{
 		const POINTS pt = MAKEPOINTS(lParam);
-		mouse.OnRightButtonRelease(pt.x, pt.y);
+		mouse.OnRightButtonRelease();
 	}
 	break;
 	case WM_MOUSEWHEEL:
@@ -211,9 +225,9 @@ LRESULT CALLBACK Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		const POINTS pt = MAKEPOINTS(lParam);
 		const short delta = GET_WHEEL_DELTA_WPARAM(wParam);
 		if (delta > 0) {
-			mouse.OnWheelUp(pt.x, pt.y);
+			mouse.OnWheelUp();
 		} else if (delta < 0) {
-			mouse.OnWheelDown(pt.x, pt.y);
+			mouse.OnWheelDown();
 		}
 	}
 	break;

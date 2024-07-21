@@ -78,7 +78,7 @@ bool Mouse::IsEmpty() const {
 }
 
 bool Mouse::IsInWindow() const {
-	return false;
+	return isInWindow;
 }
 // ******************************** Private Interface For Friend Window ********************************
 void Mouse::OnMouseMove(int x, int y) {
@@ -88,36 +88,48 @@ void Mouse::OnMouseMove(int x, int y) {
 	TrimBuffer();
 }
 
-void Mouse::OnLeftButtonPress(int x, int y) {
+void Mouse::OnMouseEnter() {
+	isInWindow = true;
+	eventBuffer.emplace(Event::Type::Enter, *this);
+	TrimBuffer();
+}
+
+void Mouse::OnMouseLeave() {
+	isInWindow = false;
+	eventBuffer.emplace(Event::Type::Leave, *this);
+	TrimBuffer();
+}
+
+void Mouse::OnLeftButtonPress() {
 	isLeftPressed = true;
 	eventBuffer.emplace(Event::Type::LPress, *this);
 	TrimBuffer();
 }
 
-void Mouse::OnLeftButtonRelease(int x, int y) {
+void Mouse::OnLeftButtonRelease() {
 	isLeftPressed = false;
 	eventBuffer.emplace(Event::Type::LRelease, *this);
 	TrimBuffer();
 }
 
-void Mouse::OnRightButtonPress(int x, int y) {
+void Mouse::OnRightButtonPress() {
 	isRightPressed = true;
 	eventBuffer.emplace(Event::Type::RPress, *this);
 	TrimBuffer();
 }
 
-void Mouse::OnRightButtonRelease(int x, int y) {
+void Mouse::OnRightButtonRelease() {
 	isRightPressed = false;
 	eventBuffer.emplace(Event::Type::RRelease, *this);
 	TrimBuffer();
 }
 
-void Mouse::OnWheelDown(int x, int y) {
+void Mouse::OnWheelDown() {
 	eventBuffer.emplace(Event::Type::WheelDown, *this);
 	TrimBuffer();
 }
 
-void Mouse::OnWheelUp(int x, int y) {
+void Mouse::OnWheelUp() {
 	eventBuffer.emplace(Event::Type::WheelUp, *this);
 	TrimBuffer();
 }

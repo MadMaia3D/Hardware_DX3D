@@ -11,6 +11,8 @@ public:
 		enum class Type {
 			LPress,
 			LRelease,
+			Enter,
+			Leave,
 			RPress,
 			RRelease,
 			WheelUp,
@@ -55,12 +57,14 @@ public:
 	// ******************************** Private Interface For Friend Window ********************************
 private:
 	void OnMouseMove(int x, int y);
-	void OnLeftButtonPress(int x, int y);
-	void OnLeftButtonRelease(int x, int y);
-	void OnRightButtonPress(int x, int y);
-	void OnRightButtonRelease(int x, int y);
-	void OnWheelDown(int x, int y);
-	void OnWheelUp(int x, int y);
+	void OnMouseEnter();
+	void OnMouseLeave();
+	void OnLeftButtonPress();
+	void OnLeftButtonRelease();
+	void OnRightButtonPress();
+	void OnRightButtonRelease();
+	void OnWheelDown();
+	void OnWheelUp();
 	void TrimBuffer();
 private:
 	static constexpr unsigned char maxBufferSize = 16u;
@@ -68,5 +72,6 @@ private:
 	int y;
 	bool isLeftPressed = false;
 	bool isRightPressed = false;
+	bool isInWindow = false;
 	std::queue<Event> eventBuffer;
 };
