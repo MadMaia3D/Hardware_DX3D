@@ -1,15 +1,16 @@
 #include "Window.h"
 #include "ExtendedException.h"
+#include <sstream>
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	try {
-		Window window("Hardware 3D Window", 640, 480);
+		Window wnd("Hardware 3D Window", 640, 480);
 
 		MSG msg;
 		BOOL gResult;
 		while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0) {
 			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			DispatchMessage(&msg);			
 		}
 
 		if (gResult != 0) {

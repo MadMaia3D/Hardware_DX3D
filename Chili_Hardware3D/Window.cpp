@@ -198,37 +198,27 @@ LRESULT CALLBACK Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	break;
 	case WM_LBUTTONDOWN:
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnLeftButtonPress();
 	}
 	break;
 	case WM_LBUTTONUP:
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnLeftButtonRelease();
 	}
 	break;
 	case WM_RBUTTONDOWN:
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnRightButtonPress();
 	}
 	break;
 	case WM_RBUTTONUP:
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnRightButtonRelease();
 	}
 	break;
 	case WM_MOUSEWHEEL:
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		const short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-		if (delta > 0) {
-			mouse.OnWheelUp();
-		} else if (delta < 0) {
-			mouse.OnWheelDown();
-		}
+		mouse.OnWheelDelta(GET_WHEEL_DELTA_WPARAM(wParam));
 	}
 	break;
 	}

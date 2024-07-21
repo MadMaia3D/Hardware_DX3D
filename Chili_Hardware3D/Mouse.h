@@ -65,6 +65,7 @@ private:
 	void OnRightButtonRelease();
 	void OnWheelDown();
 	void OnWheelUp();
+	void OnWheelDelta(short delta);
 	void TrimBuffer();
 private:
 	static constexpr unsigned char maxBufferSize = 16u;
@@ -73,5 +74,6 @@ private:
 	bool isLeftPressed = false;
 	bool isRightPressed = false;
 	bool isInWindow = false;
+	short wheelDeltaCarry = 0;
 	std::queue<Event> eventBuffer;
 };

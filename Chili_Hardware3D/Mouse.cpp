@@ -1,4 +1,5 @@
 #include "Mouse.h"
+#include "WindowsIncluder.h"
 
 // ******************************** Event Class ********************************
 Mouse::Event::Event() : type(Type::Invalid), isLeftPressed(false), isRightPressed(false), x(0), y(0) {}
@@ -132,6 +133,19 @@ void Mouse::OnWheelDown() {
 void Mouse::OnWheelUp() {
 	eventBuffer.emplace(Event::Type::WheelUp, *this);
 	TrimBuffer();
+}
+
+void Mouse::OnWheelDelta(short delta) {
+	wheelDeltaCarry += delta;
+
+	while (wheelDeltaCarry >= WHEEL_DELTA) {
+		wheelDeltaCarry -= WHEEL_DELTA;
+		OnWheelUp();
+	}
+	while (wheelDeltaCarry <= -WHEEL_DELTA) {
+		wheelDeltaCarry += WHEEL_DELTA;
+		OnWheelDown();
+	}
 }
 
 void Mouse::TrimBuffer() {
