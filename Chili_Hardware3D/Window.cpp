@@ -79,6 +79,10 @@ Window::~Window() {
 	DestroyWindow(hWnd);
 }
 
+void Window::SetTitle(std::string title) {
+	SetWindowText(hWnd, title.c_str());
+}
+
 LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	if (msg == WM_CREATE) {
 		const CREATESTRUCTW *pCreate = reinterpret_cast<CREATESTRUCTW*>(lParam);
@@ -102,6 +106,25 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
+		/**************** On Window Focus Loss ****************/
+	case WM_KILLFOCUS:
+		kbd.ClearState();
+		break;
+		/**************** keyboard Messages ****************/
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+		if ( !(lParam & 0x40000000) || kbd.IsAutorepeatEnabled()) {
+			kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+		}
+		break;
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+		break;
+	case WM_CHAR:
+	case WM_SYSCHAR:
+		kbd.OnChar(static_cast<unsigned char>(wParam));
+		break;
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);

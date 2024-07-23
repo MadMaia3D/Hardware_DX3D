@@ -1,6 +1,7 @@
 #pragma once
 #include "WindowsIncluder.h"
 #include "ExtendedException.h"
+#include "Keyboard.h"
 
 class Window {
 public:
@@ -34,6 +35,7 @@ public:
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
 	~Window();
+	void SetTitle(std::string title);
 	static LRESULT WINAPI HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT WINAPI HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -41,4 +43,6 @@ private:
 	int width;
 	int height;
 	HWND hWnd;
+public:
+	Keyboard kbd;
 };
