@@ -1,5 +1,4 @@
 #include "Window.h"
-#include "ExtendedException.h"
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	try {

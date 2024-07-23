@@ -1,5 +1,7 @@
 #include "Window.h"
 
+/********************************* Window::WindowClass *********************************/
+
 Window::WindowClass Window::WindowClass::wndClassSingleton;
 
 Window::WindowClass::WindowClass()
@@ -34,6 +36,8 @@ const char* Window::WindowClass::GetName() {
 HINSTANCE Window::WindowClass::GetInstance() {
 	return wndClassSingleton.hInstance;
 }
+
+/********************************* Window *********************************/
 
 Window::Window(const char* title, int clientWidth, int clientHeight)
 	:
@@ -75,7 +79,7 @@ LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
 		SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&Window::HandleMsgThunk));
-		
+
 		return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -94,4 +98,46 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+/********************************* Window::Exception *********************************/
+
+Window::Exception::Exception(const char * fileName, size_t lineNumber, HRESULT errorCode)
+	:
+	ExtendedException(fileName, lineNumber),
+	errorCode(errorCode) {
+}
+
+char const * Window::Exception::what() const noexcept {
+	std::ostringstream oss;
+	oss << GetType() << ": \n" <<
+		GetFormattedMessage(GetErrorCode()) << "\n" <<
+		"caught at: \n" <<
+		GetFormattedFileInfo();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+char const * Window::Exception::GetType() const noexcept { return "Window Exception"; }
+
+std::string Window::Exception::GetFormattedMessage(HRESULT errorCode) {
+	char* pBuffer;
+	DWORD size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+							   0,
+							   errorCode,
+							   MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
+							   reinterpret_cast<LPSTR>(&pBuffer),
+							   0,
+							   0);
+	if (size == 0) {
+		return "Unknown error";
+	}
+	std::string output(pBuffer);
+	LocalFree(pBuffer);
+
+	return output;
+}
+
+HRESULT Window::Exception::GetErrorCode() const noexcept {
+	return errorCode;
 }

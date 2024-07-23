@@ -1,7 +1,19 @@
 #pragma once
 #include "WindowsIncluder.h"
+#include "ExtendedException.h"
 
 class Window {
+public:
+	class Exception : public ExtendedException {
+	public:
+		Exception(const char *fileName, size_t lineNumber, HRESULT errorCode);
+		char const* what() const noexcept override;
+		char const* GetType() const noexcept override;
+		static std::string GetFormattedMessage(HRESULT errorCode);
+		HRESULT GetErrorCode() const noexcept;
+	private:
+		HRESULT errorCode;
+	};
 private:
 	class WindowClass {
 	public:
