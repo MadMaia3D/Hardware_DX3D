@@ -24,7 +24,7 @@
 #define NOKERNEL
 //#define NOUSER
 #define NONLS
-#define NOMB
+//#define NOMB
 #define NOMEMMGR
 #define NOMETAFILE
 #define NOMINMAX
