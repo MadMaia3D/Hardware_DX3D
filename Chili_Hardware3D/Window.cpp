@@ -58,7 +58,7 @@ Window::Window(const char* title, int clientWidth, int clientHeight)
 	const int finalWidth = sizeRect.right - sizeRect.left;
 	const int finalHeight = sizeRect.bottom - sizeRect.top;
 
-	HWND wndHandler = CreateWindowEx(0,
+	hWnd = CreateWindowEx(0,
 									 WindowClass::GetName(),
 									 title,
 									 wndStyle,
@@ -68,11 +68,11 @@ Window::Window(const char* title, int clientWidth, int clientHeight)
 									 WindowClass::GetInstance(),
 									 this);
 
-	if (wndHandler == nullptr) {
+	if (hWnd == nullptr) {
 		throw Window::Exception(GET_FILE_NAME, GET_LINE_NUMBER, GetLastError());
 	}
 
-	ShowWindow(wndHandler, SW_SHOWNORMAL);
+	ShowWindow(hWnd, SW_SHOWNORMAL);
 }
 
 Window::~Window() {
@@ -109,7 +109,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 /********************************* Window::Exception *********************************/
 
-Window::Exception::Exception(const char * fileName, size_t lineNumber, HRESULT errorCode)
+Window::Exception::Exception(const char * fileName, size_t lineNumber, HRESULT errorCode) noexcept
 	:
 	ExtendedException(fileName, lineNumber),
 	errorCode(errorCode) {
@@ -118,7 +118,7 @@ Window::Exception::Exception(const char * fileName, size_t lineNumber, HRESULT e
 char const * Window::Exception::what() const noexcept {
 	std::ostringstream oss;
 	oss << GetType() << ": \n" <<
-		GetFormattedMessage(GetErrorCode()) << "\n" <<
+		GetErrorString() << "\n" <<
 		"caught at: \n" <<
 		GetFormattedFileInfo();
 	whatBuffer = oss.str();
@@ -127,22 +127,25 @@ char const * Window::Exception::what() const noexcept {
 
 char const * Window::Exception::GetType() const noexcept { return "Window Exception"; }
 
-std::string Window::Exception::GetFormattedMessage(HRESULT errorCode) {
-	char* pBuffer;
-	DWORD size = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-							   0,
+std::string Window::Exception::TranslateErrorCode(HRESULT errorCode) const noexcept {
+	char* pMsgBuffer;
+	DWORD msgLength = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+							   nullptr,
 							   errorCode,
 							   MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-							   reinterpret_cast<LPSTR>(&pBuffer),
+							   reinterpret_cast<LPSTR>(&pMsgBuffer),
 							   0,
-							   0);
-	if (size == 0) {
-		return "Unknown error";
+							   nullptr);
+	if (msgLength == 0) {
+		return "Unidentified error code";
 	}
-	std::string output(pBuffer);
-	LocalFree(pBuffer);
+	std::string errorString(pMsgBuffer);
+	LocalFree(pMsgBuffer);
+	return errorString;
+}
 
-	return output;
+std::string Window::Exception::GetErrorString() const noexcept {
+	return TranslateErrorCode(errorCode);
 }
 
 HRESULT Window::Exception::GetErrorCode() const noexcept {

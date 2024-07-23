@@ -6,10 +6,11 @@ class Window {
 public:
 	class Exception : public ExtendedException {
 	public:
-		Exception(const char *fileName, size_t lineNumber, HRESULT errorCode);
+		Exception(const char *fileName, size_t lineNumber, HRESULT errorCode) noexcept;
 		char const* what() const noexcept override;
 		char const* GetType() const noexcept override;
-		static std::string GetFormattedMessage(HRESULT errorCode);
+		std::string TranslateErrorCode(HRESULT errorCode) const noexcept;
+		std::string GetErrorString() const noexcept;
 		HRESULT GetErrorCode() const noexcept;
 	private:
 		HRESULT errorCode;
