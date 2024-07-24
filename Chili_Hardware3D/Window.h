@@ -2,6 +2,7 @@
 #include "WindowsIncluder.h"
 #include "ExtendedException.h"
 #include "Keyboard.h"
+#include "Mouse.h"
 
 class Window {
 public:
@@ -45,4 +46,5 @@ private:
 	HWND hWnd;
 public:
 	Keyboard kbd;
+	Mouse mouse;
 };

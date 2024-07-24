@@ -10,7 +10,7 @@
 #define NOSYSMETRICS
 #define NOMENUS
 #define NOICONS
-#define NOKEYSTATES
+//#define NOKEYSTATES
 #define NOSYSCOMMANDS
 #define NORASTEROPS
 //#define NOSHOWWINDOW
@@ -18,9 +18,9 @@
 #define NOATOM
 #define NOCLIPBOARD
 #define NOCOLOR
-#define NOCTLMGR
+//#define NOCTLMGR
 #define NODRAWTEXT
-#define NOGDI
+//#define NOGDI
 #define NOKERNEL
 //#define NOUSER
 #define NONLS

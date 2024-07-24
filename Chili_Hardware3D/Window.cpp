@@ -59,14 +59,14 @@ Window::Window(const char* title, int clientWidth, int clientHeight)
 	const int finalHeight = sizeRect.bottom - sizeRect.top;
 
 	hWnd = CreateWindowEx(0,
-									 WindowClass::GetName(),
-									 title,
-									 wndStyle,
-									 CW_USEDEFAULT, CW_USEDEFAULT, finalWidth, finalHeight,
-									 nullptr,
-									 nullptr,
-									 WindowClass::GetInstance(),
-									 this);
+						  WindowClass::GetName(),
+						  title,
+						  wndStyle,
+						  CW_USEDEFAULT, CW_USEDEFAULT, finalWidth, finalHeight,
+						  nullptr,
+						  nullptr,
+						  WindowClass::GetInstance(),
+						  this);
 
 	if (hWnd == nullptr) {
 		throw Window::Exception(GET_FILE_NAME, GET_LINE_NUMBER, GetLastError());
@@ -113,7 +113,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		/**************** keyboard Messages ****************/
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
-		if ( !(lParam & 0x40000000) || kbd.IsAutorepeatEnabled()) {
+		if (!(lParam & 0x40000000) || kbd.IsAutorepeatEnabled()) {
 			kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
 		}
 		break;
@@ -124,6 +124,41 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	case WM_CHAR:
 	case WM_SYSCHAR:
 		kbd.OnChar(static_cast<unsigned char>(wParam));
+		break;
+		/**************** Mouse Messages ****************/
+	case WM_MOUSEMOVE:
+	{
+		const POINTS pos = MAKEPOINTS(lParam);
+		if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height) {
+			mouse.OnMouseMove(pos.x, pos.y);
+			if (!mouse.IsInWindow()) {
+				SetCapture(hWnd);
+				mouse.OnMouseEnter();
+			}
+		} else {
+			if (wParam & (MK_LBUTTON | MK_RBUTTON)) {
+				mouse.OnMouseMove(pos.x, pos.y);
+			} else {
+				ReleaseCapture();
+				mouse.OnMouseLeave();
+			}
+		}
+		break;
+	}
+	case WM_LBUTTONDOWN:
+		mouse.OnLeftPressed();
+		break;
+	case WM_LBUTTONUP:
+		mouse.OnLeftReleased();
+		break;
+	case WM_RBUTTONDOWN:
+		mouse.OnRightPressed();
+		break;
+	case WM_RBUTTONUP:
+		mouse.OnRightReleased();
+		break;
+	case WM_MOUSEWHEEL:
+		mouse.OnWheelDelta(GET_WHEEL_DELTA_WPARAM(wParam));
 		break;
 	}
 
@@ -153,12 +188,12 @@ char const * Window::Exception::GetType() const noexcept { return "Window Except
 std::string Window::Exception::TranslateErrorCode(HRESULT errorCode) const noexcept {
 	char* pMsgBuffer;
 	DWORD msgLength = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-							   nullptr,
-							   errorCode,
-							   MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-							   reinterpret_cast<LPSTR>(&pMsgBuffer),
-							   0,
-							   nullptr);
+									nullptr,
+									errorCode,
+									MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
+									reinterpret_cast<LPSTR>(&pMsgBuffer),
+									0,
+									nullptr);
 	if (msgLength == 0) {
 		return "Unidentified error code";
 	}
