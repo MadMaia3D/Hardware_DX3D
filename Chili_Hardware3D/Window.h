@@ -1,5 +1,6 @@
 #pragma once
 #include "WindowsIncluder.h"
+#include <optional>
 #include "ExtendedException.h"
 #include "Keyboard.h"
 #include "Mouse.h"
@@ -37,6 +38,7 @@ public:
 	Window& operator=(const Window&) = delete;
 	~Window();
 	void SetTitle(std::string title);
+	static std::optional<int> ProcessMessages();
 	static LRESULT WINAPI HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT WINAPI HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
